@@ -1,7 +1,7 @@
 // This code runs the simulation and sends the selected moves to the game
 function AgentManager(gameManager) {
     this.gameManager = gameManager;
-    this.agent = new Agent();
+    this.agent = new Agent(gameManager);
     this.moveCount = 0;
 
     this.start = Date.now();

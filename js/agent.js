@@ -2,12 +2,12 @@
 class Agent {
 
     constructor(gameManager) {
-       
+       this.gameManager = gameManager
     }
 
     selectMove() {
-        var brain = new AgentBrain(gameManager);
-
+        var brain = new AgentBrain(this.gameManager);
+        
         // Use the brain to simulate moves
         // brain.move(i) 
         // i = 0: up, 1: right, 2: down, 3: left
