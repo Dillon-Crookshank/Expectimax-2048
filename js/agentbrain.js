@@ -3,9 +3,10 @@ function randomInt(n) {
     return Math.floor(Math.random() * n);
 };
 
-class AgentBrain {
+class AgentBrain {    
     constructor(gameEngine) {
         this.size = 4;
+        this.gameEngine = gameEngine
         this.previousState = gameEngine.grid.serialize();
         this.reset();
         this.score = 0;
@@ -16,15 +17,22 @@ class AgentBrain {
         this.grid = new Grid(this.previousState.size, this.previousState.cells);
     };
 
-    // Adds a tile in a random position
-    addRandomTile() {
-        if (this.grid.cellsAvailable()) {
-            var value = Math.random() < 0.9 ? 2 : 4;
-            var tile = new Tile(this.grid.randomAvailableCell(), value);
+    clone() {
+        return new AgentBrain(this.gameEngine);
+    }
 
-            this.grid.insertTile(tile);
-        }
-    };
+    add_available_tile(tile, value) {
+        let availableCells = this.grid.availableCells();
+
+        //console.log(`-- ${tile}, ${availableCells[tile]}`)
+        let newTile = new Tile(availableCells[tile], value)
+
+        this.grid.insertTile(newTile)
+    }
+
+    num_available_tiles() {
+        return this.grid.availableCells().length;
+    }
 
     moveTile(tile, cell) {
         this.grid.cells[tile.x][tile.y] = null;
@@ -81,10 +89,7 @@ class AgentBrain {
                 }
             });
         });
-        //console.log(moved);
-        if (moved) {
-            this.addRandomTile();
-        }
+        
         return moved;
     };
 
