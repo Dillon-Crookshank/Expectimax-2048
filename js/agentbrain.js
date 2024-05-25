@@ -12,6 +12,10 @@ class AgentBrain {
         this.score = 0;
     };
 
+    set_previous_state(grid) {
+        this.previousState = grid.serialize();
+    }
+
     reset() {
         this.score = 0;
         this.grid = new Grid(this.previousState.size, this.previousState.cells);
@@ -24,7 +28,6 @@ class AgentBrain {
     add_available_tile(tile, value) {
         let availableCells = this.grid.availableCells();
 
-        //console.log(`-- ${tile}, ${availableCells[tile]}`)
         let newTile = new Tile(availableCells[tile], value)
 
         this.grid.insertTile(newTile)
@@ -89,6 +92,8 @@ class AgentBrain {
                 }
             });
         });
+
+
         
         return moved;
     };
