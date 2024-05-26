@@ -7,34 +7,32 @@ class AgentBrain {
     constructor(gameEngine) {
         this.size = 4;
         this.gameEngine = gameEngine
-        this.previousState = gameEngine.grid.serialize();
+        this.initialState = gameEngine.grid.serialize();
+        this.state_list = [this.initialState]
         this.reset();
         this.score = 0;
     };
 
-    set_previous_state(grid) {
-        this.previousState = grid.serialize();
-    }
-
     reset() {
         this.score = 0;
-        this.grid = new Grid(this.previousState.size, this.previousState.cells);
+        this.grid = new Grid(this.initialState.size, this.initialState.cells);
+        this.state_list = [this.initialState]
     };
 
-    clone() {
-        return new AgentBrain(this.gameEngine);
+    // Places a tile on the grid. Registers a state in the state list
+    place_tile(tile, value) {
+        this.state_list.push(this.grid.serialize());
+        
+        let newTile = new Tile(tile, value);
+
+        this.grid.insertTile(newTile);
     }
 
-    add_available_tile(tile, value) {
-        let availableCells = this.grid.availableCells();
-
-        let newTile = new Tile(availableCells[tile], value)
-
-        this.grid.insertTile(newTile)
-    }
-
-    num_available_tiles() {
-        return this.grid.availableCells().length;
+    // Reverts state to before the last action was executed
+    undo() {
+        // Revert the state to the last in the state list and pop from the end of the list
+        let new_state = this.state_list.pop();
+        this.grid = new Grid(new_state.size, new_state.cells);
     }
 
     moveTile(tile, cell) {
@@ -43,8 +41,10 @@ class AgentBrain {
         tile.updatePosition(cell);
     };
 
-    // Move tiles on the grid in the specified direction
+    // Move tiles on the grid in the specified direction, registers a state in the state list.
     move(direction) {
+        let prev_state = this.grid.serialize();
+        
         // 0: up, 1: right, 2: down, 3: left
         var self = this;
 
@@ -93,7 +93,9 @@ class AgentBrain {
             });
         });
 
-
+        if (moved) {
+            this.state_list.push(prev_state);
+        }
         
         return moved;
     };
